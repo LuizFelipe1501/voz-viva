@@ -8,6 +8,7 @@ interface UploadedFile {
   url: string;
   name: string;
   type: "image" | "video";
+  path?: string; // Storage path for signed URL retrieval
 }
 
 interface FileUploadProps {
@@ -88,15 +89,26 @@ export function FileUpload({ files, onFilesChange, maxFiles = 5 }: FileUploadPro
           continue;
         }
 
-        // Get public URL
-        const { data: urlData } = supabase.storage
+        // Get signed URL (bucket is private now for security)
+        const { data: signedUrlData, error: signedUrlError } = await supabase.storage
           .from("manifestacao-anexos")
-          .getPublicUrl(data.path);
+          .createSignedUrl(data.path, 3600); // 1 hour expiry
+
+        if (signedUrlError || !signedUrlData?.signedUrl) {
+          console.error("Signed URL error:", signedUrlError);
+          toast({
+            title: "Erro",
+            description: `Falha ao obter URL do arquivo ${file.name}.`,
+            variant: "destructive",
+          });
+          continue;
+        }
 
         newFiles.push({
-          url: urlData.publicUrl,
+          url: signedUrlData.signedUrl,
           name: file.name,
           type: isImage ? "image" : "video",
+          path: data.path, // Store path for later retrieval
         });
       }
 

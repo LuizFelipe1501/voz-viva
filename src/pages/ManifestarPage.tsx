@@ -10,6 +10,7 @@ interface UploadedFile {
   url: string;
   name: string;
   type: "image" | "video";
+  path?: string; // Storage path for signed URL retrieval
 }
 
 export default function ManifestarPage() {
