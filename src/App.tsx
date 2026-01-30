@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./providers/AuthProvider";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { InstallPrompt } from "./components/pwa/InstallPrompt";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
@@ -15,6 +16,7 @@ import ManifestarConfirmacaoPage from "./pages/ManifestarConfirmacaoPage";
 import ComunidadePage from "./pages/ComunidadePage";
 import PostDetalhePage from "./pages/PostDetalhePage";
 import MinhasRespostasPage from "./pages/MinhasRespostasPage";
+import RespostaDetalhePage from "./pages/RespostaDetalhePage";
 import ConfiguracoesPage from "./pages/ConfiguracoesPage";
 import IdiomasPage from "./pages/IdiomasPage";
 import AcessibilidadePage from "./pages/AcessibilidadePage";
@@ -27,6 +29,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <InstallPrompt />
         <BrowserRouter>
           <Routes>
             {/* Public routes */}
@@ -50,6 +53,9 @@ const App = () => (
             } />
             <Route path="/minhas-respostas" element={
               <ProtectedRoute><MinhasRespostasPage /></ProtectedRoute>
+            } />
+            <Route path="/minhas-respostas/:id" element={
+              <ProtectedRoute><RespostaDetalhePage /></ProtectedRoute>
             } />
             <Route path="/configuracoes" element={
               <ProtectedRoute><ConfiguracoesPage /></ProtectedRoute>
