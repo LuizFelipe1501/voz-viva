@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 const assuntos = [
   "Transporte Metrô",
@@ -19,6 +20,7 @@ const assuntos = [
 ];
 
 export default function ManifestarAssuntoPage() {
+  const { t } = useTranslation();
   const [assunto, setAssunto] = useState("");
   const [buscaAssunto, setBuscaAssunto] = useState("");
   const [arquivos, setArquivos] = useState<File[]>([]);
@@ -26,7 +28,11 @@ export default function ManifestarAssuntoPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Get data from previous step
   const texto = location.state?.texto || "";
+  const anexos = location.state?.anexos || [];
+  const anonima = location.state?.anonima || false;
 
   const assuntosFiltrados = assuntos.filter(a => 
     a.toLowerCase().includes(buscaAssunto.toLowerCase())
@@ -41,8 +47,8 @@ export default function ManifestarAssuntoPage() {
   const handleSubmit = async () => {
     if (!assunto) {
       toast({
-        title: "Selecione um assunto",
-        description: "Escolha um assunto para sua manifestação.",
+        title: t("manifest.selectSubject"),
+        description: t("manifest.selectSubjectDesc"),
         variant: "destructive",
       });
       return;
@@ -50,12 +56,43 @@ export default function ManifestarAssuntoPage() {
 
     setIsSubmitting(true);
     try {
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: t("common.error"),
+          description: t("manifest.loginRequired"),
+          variant: "destructive",
+        });
+        navigate("/auth");
+        return;
+      }
+
+      // Generate protocol number
       const protocolo = Math.random().toString(36).substring(2, 12).toUpperCase();
       
-      // TODO: Save to database when schema is created
+      // Save to database
+      const { error } = await supabase
+        .from("manifestacoes")
+        .insert({
+          texto,
+          assunto,
+          protocolo,
+          anonima,
+          anexos: anexos,
+          user_id: user.id,
+          status: "pendente",
+        });
+
+      if (error) {
+        console.error("Error saving manifestation:", error);
+        throw error;
+      }
+
       toast({
-        title: "Manifestação registrada!",
-        description: `Protocolo: ${protocolo}`,
+        title: t("manifest.success"),
+        description: `${t("manifest.protocol")}: ${protocolo}`,
       });
       
       navigate("/manifestar/confirmacao", { 
@@ -64,8 +101,8 @@ export default function ManifestarAssuntoPage() {
     } catch (error) {
       console.error("Error submitting:", error);
       toast({
-        title: "Erro ao enviar",
-        description: "Tente novamente mais tarde.",
+        title: t("common.error"),
+        description: t("manifest.errorSubmitting"),
         variant: "destructive",
       });
     } finally {
@@ -74,7 +111,7 @@ export default function ManifestarAssuntoPage() {
   };
 
   return (
-    <AppLayout showBackBar backLabel="Voltar" backTo="/manifestar">
+    <AppLayout showBackBar backLabel={t("common.back")} backTo="/manifestar">
       <div className="px-6 py-6 space-y-6">
         {/* Subject selection */}
         <motion.div
@@ -82,11 +119,11 @@ export default function ManifestarAssuntoPage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <h3 className="text-lg font-bold text-foreground mb-3">
-            Escolha um assunto para o seu relato:
+            {t("manifest.chooseSubject")}
           </h3>
           <input
             type="text"
-            placeholder="Digite no mínimo 4 caracteres para pesquisar o assunto"
+            placeholder={t("manifest.searchSubject")}
             value={buscaAssunto}
             onChange={(e) => setBuscaAssunto(e.target.value)}
             className="w-full p-3 rounded-lg bg-white text-gray-800 border-2 border-primary/30 focus:border-accent focus:outline-none"
@@ -111,7 +148,7 @@ export default function ManifestarAssuntoPage() {
           )}
           
           {assunto && (
-            <p className="mt-2 text-accent font-medium">Selecionado: {assunto}</p>
+            <p className="mt-2 text-accent font-medium">{t("manifest.selected")}: {assunto}</p>
           )}
         </motion.div>
 
@@ -121,14 +158,14 @@ export default function ManifestarAssuntoPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <h3 className="text-lg font-bold text-foreground mb-2">Anexos:</h3>
+          <h3 className="text-lg font-bold text-foreground mb-2">{t("manifest.attachments")}:</h3>
           <p className="text-foreground/70 text-sm mb-3">
-            Aqui é o lugar para anexar documentos, fotos ou vídeos. Esta etapa não é obrigatória.
+            {t("manifest.attachDesc")}
           </p>
           
           <label className="action-btn inline-flex items-center gap-2 cursor-pointer">
             <Paperclip className="w-5 h-5" />
-            Anexar arquivo
+            {t("manifest.attachFile")}
             <input
               type="file"
               multiple
@@ -154,7 +191,7 @@ export default function ManifestarAssuntoPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          ATENÇÃO: A partir desta etapa você não pode mais alterar seu texto.
+          {t("manifest.warning")}
         </motion.p>
 
         {/* Submit button */}
@@ -169,7 +206,7 @@ export default function ManifestarAssuntoPage() {
             disabled={isSubmitting || !assunto}
             className="action-btn"
           >
-            {isSubmitting ? "Enviando..." : "Avançar"}
+            {isSubmitting ? t("common.sending") : t("common.next")}
           </button>
         </motion.div>
       </div>

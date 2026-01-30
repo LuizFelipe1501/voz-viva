@@ -1,8 +1,9 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
+import { changeLanguage, getCurrentLanguage } from "@/i18n";
 
 const idiomas = [
   { code: "pt-BR", name: "Português (Brasil)", flag: "🇧🇷" },
@@ -12,10 +13,15 @@ const idiomas = [
 ];
 
 const IdiomasPage = () => {
-  const [selectedIdioma, setSelectedIdioma] = useState("pt-BR");
+  const { t, i18n } = useTranslation();
+  const selectedIdioma = getCurrentLanguage();
+
+  const handleLanguageChange = (code: string) => {
+    changeLanguage(code);
+  };
 
   return (
-    <AppLayout showBackBar backLabel="Idiomas" backTo="/">
+    <AppLayout showBackBar backLabel={t("languages.title")} backTo="/">
       <motion.div 
         className="px-6 py-8 space-y-4"
         initial={{ opacity: 0 }}
@@ -23,13 +29,13 @@ const IdiomasPage = () => {
         transition={{ duration: 0.3 }}
       >
         <p className="text-foreground/70 text-sm mb-6">
-          Selecione o idioma do aplicativo
+          {t("languages.selectLanguage")}
         </p>
 
         {idiomas.map((idioma, index) => (
           <motion.button
             key={idioma.code}
-            onClick={() => setSelectedIdioma(idioma.code)}
+            onClick={() => handleLanguageChange(idioma.code)}
             className={cn(
               "w-full bg-card rounded-2xl p-5 flex items-center justify-between",
               "transition-all hover:scale-[1.02]",

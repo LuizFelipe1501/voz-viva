@@ -1,11 +1,9 @@
 import { motion } from "framer-motion";
 interface HeaderProps {
   title?: string;
-  subtitle?: string;
 }
 export function Header({
-  title = "Ouvidoria",
-  subtitle = "GDF"
+  title = "Ouvidoria"
 }: HeaderProps) {
   return <motion.header className="app-header" initial={{
     opacity: 0,
@@ -17,14 +15,12 @@ export function Header({
     duration: 0.3
   }}>
       <div className="flex items-center justify-center gap-3">
-        <span className="text-2xl font-bold text-foreground tracking-wide">
+        <span className="text-2xl font-bold text-[#f5f5dc] tracking-wide">
           {title}
         </span>
         <div className="relative">
-          <img src="/icons/icon-192x192.png" alt="Logo Ouvidoria GDF" className="w-12 h-12" />
+          <img alt="Logo GDF" className="h-12 w-auto object-contain" src="/lovable-uploads/1fb2246d-aa3e-429b-8645-2bb9c6f0b02b.png" />
         </div>
-        
       </div>
-      <div className="w-full h-0.5 bg-foreground/30 mt-3" />
     </motion.header>;
 }
