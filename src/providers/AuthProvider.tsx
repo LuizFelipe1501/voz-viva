@@ -19,10 +19,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Create profile on first sign in
+        if (session?.user && event === 'SIGNED_IN') {
+          // Use setTimeout to avoid deadlock
+          setTimeout(() => {
+            createProfileIfNeeded(session.user);
+          }, 0);
+        }
       }
     );
 
@@ -35,6 +43,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const createProfileIfNeeded = async (user: User) => {
+    try {
+      // Check if profile already exists
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      // If no profile exists, create one
+      if (!existingProfile) {
+        const { error } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: user.id,
+            email: user.email,
+            nome: user.user_metadata?.full_name || user.user_metadata?.name || '',
+          });
+
+        if (error) {
+          console.error('Error creating profile:', error);
+        } else {
+          console.log('Profile created successfully');
+        }
+      }
+    } catch (error) {
+      console.error('Error checking/creating profile:', error);
+    }
+  };
 
   const signOut = async () => {
     await supabase.auth.signOut();
