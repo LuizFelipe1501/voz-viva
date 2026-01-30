@@ -1,30 +1,34 @@
 import { useState, useCallback } from "react";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, EyeOff } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { FileUpload } from "@/components/manifestar/FileUpload";
+import { useTranslation } from "react-i18next";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface UploadedFile {
   url: string;
   name: string;
   type: "image" | "video";
-  path?: string; // Storage path for signed URL retrieval
+  path?: string;
 }
 
 export default function ManifestarPage() {
+  const { t } = useTranslation();
   const [texto, setTexto] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [anexos, setAnexos] = useState<UploadedFile[]>([]);
+  const [anonima, setAnonima] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const startVoiceInput = useCallback(() => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       toast({
-        title: "Não suportado",
-        description: "Seu navegador não suporta reconhecimento de voz.",
+        title: t("manifest.voiceNotSupported"),
+        description: t("manifest.voiceNotSupportedDesc"),
         variant: "destructive",
       });
       return;
@@ -73,8 +77,8 @@ export default function ManifestarPage() {
   const handleAvancar = () => {
     if (texto.length < 20) {
       toast({
-        title: "Texto muito curto",
-        description: "Escreva no mínimo 20 caracteres.",
+        title: t("manifest.tooShort"),
+        description: t("manifest.tooShortDesc"),
         variant: "destructive",
       });
       return;
@@ -82,13 +86,14 @@ export default function ManifestarPage() {
     navigate("/manifestar/assunto", { 
       state: { 
         texto, 
-        anexos: anexos.map(a => a.url) 
+        anexos: anexos.map(a => a.url),
+        anonima
       } 
     });
   };
 
   return (
-    <AppLayout showBackBar backLabel="Voltar para tela inicial">
+    <AppLayout showBackBar backLabel={t("common.backToHome")}>
       <div className="px-6 py-6">
         <motion.div
           className="menu-card flex-col items-start"
@@ -96,8 +101,31 @@ export default function ManifestarPage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <h2 className="text-2xl font-bold text-card-foreground mb-4 w-full text-center">
-            Manifeste-se
+            {t("manifest.title")}
           </h2>
+        </motion.div>
+
+        {/* Anonymous option */}
+        <motion.div
+          className="mt-4 bg-primary/20 rounded-xl p-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+        >
+          <label className="flex items-center gap-3 cursor-pointer">
+            <Checkbox
+              checked={anonima}
+              onCheckedChange={(checked) => setAnonima(checked === true)}
+              className="h-6 w-6 border-2 border-accent data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground"
+            />
+            <div className="flex items-center gap-2">
+              <EyeOff className="w-5 h-5 text-foreground/70" />
+              <div>
+                <span className="text-foreground font-medium">{t("manifest.anonymous")}</span>
+                <p className="text-foreground/60 text-sm">{t("manifest.anonymousDesc")}</p>
+              </div>
+            </div>
+          </label>
         </motion.div>
 
         <motion.div
@@ -108,7 +136,7 @@ export default function ManifestarPage() {
         >
           <div className="flex items-center justify-between mb-2">
             <label className="text-foreground text-sm tracking-wide">
-              Escreva aqui o seu registro:
+              {t("manifest.writeHere")}
             </label>
             <motion.button
               onClick={startVoiceInput}
@@ -119,7 +147,7 @@ export default function ManifestarPage() {
               }`}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              title="Falar para escrever"
+              title={t("manifest.writeHere")}
             >
               {isListening ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
             </motion.button>
@@ -128,12 +156,12 @@ export default function ManifestarPage() {
           <textarea
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
-            placeholder="Escreva no mínimo 20 caracteres..."
+            placeholder={t("manifest.placeholder")}
             className="manifest-textarea"
           />
           
           <p className="text-foreground/60 text-sm mt-2">
-            {texto.length} / 20 caracteres mínimos
+            {texto.length} / 20 {t("manifest.minChars")}
           </p>
         </motion.div>
 
@@ -145,7 +173,7 @@ export default function ManifestarPage() {
           transition={{ delay: 0.15 }}
         >
           <label className="text-foreground text-sm tracking-wide block mb-3">
-            Anexar imagens ou vídeos (opcional):
+            {t("manifest.attachLabel")}
           </label>
           <FileUpload 
             files={anexos} 
@@ -164,8 +192,9 @@ export default function ManifestarPage() {
             onClick={handleAvancar}
             className="action-btn"
             disabled={texto.length < 20}
+            aria-label={t("common.next")}
           >
-            Avançar
+            {t("common.next")}
           </button>
         </motion.div>
       </div>
