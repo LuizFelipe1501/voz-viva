@@ -2,7 +2,7 @@
 
 Sistema de ouvidoria digital do Governo do Distrito Federal, permitindo que cidadãos registrem manifestações, acompanhem respostas e participem da comunidade.
 
-## 📋 Sobre o Projeto
+##  Sobre o Projeto
 
 A Ouvidoria GDF é uma aplicação web progressiva (PWA) que permite aos cidadãos:
 - Registrar manifestações (reclamações, sugestões, elogios)
@@ -12,7 +12,7 @@ A Ouvidoria GDF é uma aplicação web progressiva (PWA) que permite aos cidadã
 - Participar da comunidade visualizando manifestações públicas
 - Utilizar entrada de voz para ditar manifestações
 
-## 🚀 Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 - **Frontend:**
   - [React](https://reactjs.org/) - Biblioteca JavaScript para interfaces
@@ -46,7 +46,7 @@ Antes de começar, você precisa ter instalado em sua máquina:
 - **Git** (para clonar o repositório)
   - [Baixar Git](https://git-scm.com/)
 
-## 🔧 Instalação
+##  Instalação
 
 ### 1. Clone o repositório
 
@@ -99,7 +99,7 @@ bun run dev
 
 O aplicativo estará disponível em `http://localhost:5173`
 
-## 📁 Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```
 ouvidoria-gdf/
@@ -135,7 +135,7 @@ ouvidoria-gdf/
 └── tsconfig.json           # Configuração do TypeScript
 ```
 
-## 🧪 Testes
+##  Testes
 
 Para executar os testes:
 
@@ -148,7 +148,7 @@ Ou com bun:
 bun run test
 ```
 
-## 📱 PWA (Progressive Web App)
+##  PWA (Progressive Web App)
 
 O aplicativo é uma PWA e pode ser instalado em dispositivos móveis e desktop:
 
@@ -156,7 +156,7 @@ O aplicativo é uma PWA e pode ser instalado em dispositivos móveis e desktop:
 2. O popup de instalação aparecerá automaticamente
 3. Clique em "Instalar" para adicionar à tela inicial
 
-## 🌐 Idiomas Suportados
+##  Idiomas Suportados
 
 - Português (Brasil) - padrão
 - English (US)
@@ -165,14 +165,14 @@ O aplicativo é uma PWA e pode ser instalado em dispositivos móveis e desktop:
 
 Para alterar o idioma, acesse: **Configurações > Idiomas**
 
-## 🔐 Funcionalidades de Autenticação
+##  Funcionalidades de Autenticação
 
 - Cadastro com email e senha
 - Login
 - Manifestações vinculadas ao usuário
 - Opção de manifestação anônima
 
-## 📝 Scripts Disponíveis
+##  Scripts Disponíveis
 
 | Comando | Descrição |
 |---------|-----------|
@@ -182,7 +182,7 @@ Para alterar o idioma, acesse: **Configurações > Idiomas**
 | `npm run test` | Executa testes |
 | `npm run lint` | Verifica código com ESLint |
 
-## 🤝 Contribuindo
+##  Contribuindo
 
 1. Faça um fork do projeto
 2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
@@ -190,11 +190,11 @@ Para alterar o idioma, acesse: **Configurações > Idiomas**
 4. Push para a branch (`git push origin feature/nova-feature`)
 5. Abra um Pull Request
 
-## 📄 Licença
+##  Licença
 
 Este projeto está sob a licença MIT.
 
-## 🔗 Links Úteis
+##  Links Úteis
 
 - **Produção:** https://ouvidoria-gdf.lovable.app
 - **Documentação Supabase:** https://supabase.com/docs
